@@ -1,3 +1,507 @@
-<h1>
-    Hello !!
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boston House Price Prediction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B2545;
+    --navy-deep:#081b34;
+    --blue-line:#4E7EA6;
+    --blue-line-soft:rgba(93,138,168,0.35);
+    --cream:#F4EFE2;
+    --ink:#142433;
+    --brass:#C9972B;
+    --brass-dark:#a97c1e;
+    --ok:#3E7A5E;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    position:relative;
+    background-color:var(--navy);
+    background-image:
+      radial-gradient(ellipse 900px 600px at 12% 8%, rgba(78,126,166,0.35), transparent 60%),
+      radial-gradient(ellipse 800px 700px at 88% 92%, rgba(201,151,43,0.14), transparent 55%),
+      repeating-linear-gradient(0deg, var(--blue-line-soft) 0, var(--blue-line-soft) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, var(--blue-line-soft) 0, var(--blue-line-soft) 1px, transparent 1px, transparent 32px),
+      linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    font-family:'JetBrains Mono', monospace;
+    color:var(--cream);
+    padding:48px 24px 80px;
+  }
+
+  body::before, body::after{
+    content:"";
+    position:fixed;
+    width:34px;
+    height:34px;
+    border:1px solid rgba(201,151,43,0.55);
+    pointer-events:none;
+  }
+
+  body::before{
+    top:22px; left:22px;
+    border-right:none;
+    border-bottom:none;
+  }
+
+  body::after{
+    bottom:22px; right:22px;
+    border-left:none;
+    border-top:none;
+  }
+
+  .page{
+    max-width:1180px;
+    margin:0 auto;
+    animation:fadeUp .6s ease both;
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .hero{
+    display:grid;
+    grid-template-columns:0.95fr 1.15fr;
+    gap:56px;
+    align-items:start;
+  }
+
+  .eyebrow{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--brass);
+    border:1px solid rgba(201,151,43,0.5);
+    padding:5px 10px;
+    border-radius:2px;
+    margin-bottom:22px;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(30px, 3.4vw, 46px);
+    line-height:1.12;
+    margin:0 0 18px;
+    color:#fff;
+  }
+
+  .lede{
+    font-family:'JetBrains Mono', monospace;
+    font-size:14.5px;
+    line-height:1.7;
+    color:rgba(244,239,226,0.8);
+    max-width:46ch;
+    margin:0 0 36px;
+  }
+
+  .blueprint-svg{width:100%; max-width:420px; height:auto; opacity:.95;}
+
+  .scale-note{
+    font-size:11px;
+    letter-spacing:.1em;
+    color:rgba(244,239,226,0.45);
+    margin:6px 0 0;
+    text-transform:uppercase;
+  }
+  .blueprint-svg .frame{
+    fill:none; stroke:var(--cream); stroke-width:2;
+    stroke-dasharray:1000;
+    stroke-dashoffset:1000;
+    animation:draw 1.6s ease forwards .2s;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .blueprint-svg .dim{fill:none; stroke:var(--brass); stroke-width:1; stroke-dasharray:4 3;}
+  .blueprint-svg .tick{stroke:var(--brass); stroke-width:1;}
+  .blueprint-svg .label{font-family:'JetBrains Mono', monospace; font-size:9px; fill:var(--brass); letter-spacing:.05em;}
+  .blueprint-svg .title-label{font-family:'JetBrains Mono', monospace; font-size:10px; fill:rgba(244,239,226,0.55); letter-spacing:.08em;}
+
+  /* ---- Ledger card ---- */
+  .ledger{
+    position:relative;
+    background:var(--cream);
+    color:var(--ink);
+    border-radius:6px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.35);
+    overflow:hidden;
+  }
+
+  .stamp{
+    position:absolute;
+    top:16px;
+    right:24px;
+    width:68px;
+    height:68px;
+    border:2px dashed var(--brass);
+    border-radius:50%;
+    transform:rotate(-9deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:8.5px;
+    font-weight:700;
+    letter-spacing:.06em;
+    line-height:1.25;
+    color:var(--brass-dark);
+    background:rgba(201,151,43,0.06);
+  }
+
+  .ledger-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:22px 100px 16px 28px;
+    border-bottom:2px solid var(--ink);
+  }
+
+  .ledger-head h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:20px;
+    margin:0;
+  }
+
+  .ledger-head p{
+    margin:6px 0 0;
+    font-size:11.5px;
+    color:#6b6152;
+    line-height:1.4;
+    max-width:34ch;
+  }
+
+  form{padding:8px 28px 28px;}
+
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+  }
+
+  .section-label{
+    grid-column:1 / -1;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--brass-dark);
+    padding-bottom:6px;
+    margin:20px 0 2px;
+    border-bottom:1px solid rgba(20,36,51,0.28);
+  }
+
+  .section-label:first-child{margin-top:2px;}
+
+  .field{
+    padding:14px 16px 14px 0;
+    border-bottom:1px solid rgba(20,36,51,0.14);
+    transition:background .15s ease;
+  }
+
+  .field:hover{background:rgba(201,151,43,0.06);}
+
+  .field:nth-child(odd){padding-right:20px;}
+  .field:nth-child(even){padding-left:20px; border-left:1px solid rgba(20,36,51,0.14);}
+
+  .field label{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:6px;
+  }
+
+  .code{
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.04em;
+    color:var(--navy);
+    min-width:56px;
+  }
+
+  .desc{
+    font-size:10.5px;
+    color:#6b6152;
+    line-height:1.3;
+  }
+
+  .field input, .field select{
+    width:100%;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    padding:8px 10px;
+    border:1px solid rgba(20,36,51,0.35);
+    border-radius:3px;
+    background:#fff;
+    color:var(--ink);
+  }
+
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--brass);
+    box-shadow:0 0 0 3px rgba(201,151,43,0.25);
+  }
+
+  .submit-row{
+    grid-column:1 / -1;
+    margin-top:18px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  button.predict{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    font-size:13px;
+    background:linear-gradient(135deg, var(--navy) 0%, #123a63 100%);
+    color:#fff;
+    border:none;
+    padding:15px 24px 15px 28px;
+    border-radius:5px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:0 8px 20px rgba(11,37,69,0.35);
+    transition:transform .15s ease, background .25s ease, box-shadow .25s ease;
+  }
+
+  button.predict::after{
+    content:"\2192";
+    font-size:16px;
+    transition:transform .2s ease;
+  }
+
+  button.predict:hover{
+    background:linear-gradient(135deg, var(--brass-dark) 0%, var(--brass) 100%);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(201,151,43,0.4);
+  }
+
+  button.predict:hover::after{ transform:translateX(4px); }
+  button.predict:focus-visible{outline:3px solid var(--brass); outline-offset:2px;}
+
+  .hint{font-size:11px; color:#6b6152;}
+
+  .result{
+    grid-column:1 / -1;
+    margin-top:16px;
+    background:linear-gradient(135deg, var(--navy) 0%, #123a63 100%);
+    color:var(--cream);
+    border-radius:8px;
+    border-left:4px solid var(--brass);
+    padding:18px 20px;
+    font-size:14.5px;
+    line-height:1.55;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:0 16px 34px rgba(11,37,69,0.32);
+    animation:slideIn .5s ease both;
+  }
+
+  @keyframes slideIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .result .icon{
+    flex-shrink:0;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--brass);
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .result .text{color:#fff;}
+
+  @media (max-width: 880px){
+    .hero{grid-template-columns:1fr;}
+    .field-grid{grid-template-columns:1fr;}
+    .field:nth-child(even){border-left:none; padding-left:0;}
+    .field:nth-child(odd){padding-right:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .page{animation:none;}
+    button.predict{transition:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+
+      <!-- Left: framing + blueprint illustration -->
+      <div class="hero-left">
+        <span class="eyebrow">Regression Model &middot; Boston Housing</span>
+        <h1>Estimate the median value of a Boston&#8209;area home</h1>
+        <p class="lede">
+          This tool runs a trained linear regression model against the 13 classic
+          census-tract variables from the Boston Housing dataset. Fill in the survey
+          below and submit to generate an estimated median value for the tract.
+        </p>
+
+        <svg class="blueprint-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="16" class="title-label">FIG. 01 &mdash; SINGLE FAMILY DWELLING, ELEVATION</text>
+
+          <!-- roof -->
+          <polyline class="frame" points="60,140 210,60 360,140" />
+          <!-- walls -->
+          <rect class="frame" x="90" y="140" width="240" height="140" />
+          <!-- door -->
+          <rect class="frame" x="195" y="210" width="36" height="70" />
+          <!-- windows -->
+          <rect class="frame" x="120" y="165" width="34" height="34" />
+          <rect class="frame" x="266" y="165" width="34" height="34" />
+          <line class="tick" x1="137" y1="165" x2="137" y2="199" />
+          <line class="tick" x1="120" y1="182" x2="154" y2="182" />
+          <line class="tick" x1="283" y1="165" x2="283" y2="199" />
+          <line class="tick" x1="266" y1="182" x2="300" y2="182" />
+
+          <!-- width dimension -->
+          <line class="dim" x1="90" y1="298" x2="330" y2="298" />
+          <line class="tick" x1="90" y1="292" x2="90" y2="304" />
+          <line class="tick" x1="330" y1="292" x2="330" y2="304" />
+          <text x="185" y="314" class="label">RM &times; 8.3 FT</text>
+
+          <!-- height dimension -->
+          <line class="dim" x1="352" y1="60" x2="352" y2="280" />
+          <line class="tick" x1="346" y1="60" x2="358" y2="60" />
+          <line class="tick" x1="346" y1="280" x2="358" y2="280" />
+          <text x="358" y="175" class="label" transform="rotate(90 358 175)">AGE-ADJ.</text>
+
+          <text x="90" y="35" class="label">NOX ppm &middot; DIS mi &middot; TAX $/10k</text>
+        </svg>
+        <p class="scale-note">SCALE 1:50 &middot; SHEET A&#8209;01 &middot; REV. 03</p>
+      </div>
+
+      <!-- Right: the actual form, styled as a valuation ledger -->
+      <div class="hero-right">
+        <div class="ledger">
+          <div class="ledger-head">
+            <div>
+              <h2>Tract Valuation Ledger</h2>
+              <p>13 census-tract variables, grouped by category</p>
+            </div>
+          </div>
+          <div class="stamp">EST.<br>VALUE<br>MODEL</div>
+
+          <form action="{{ url_for('predict') }}" method="post">
+            <div class="field-grid">
+
+              <div class="section-label">Site &amp; Environment</div>
+
+              <div class="field">
+                <label for="CRIM"><span class="code">CRIM</span><span class="desc">Per-capita crime rate by town</span></label>
+                <input type="text" id="CRIM" name="CRIM" placeholder="e.g. 0.006" required>
+              </div>
+
+              <div class="field">
+                <label for="ZN"><span class="code">ZN</span><span class="desc">% land zoned for lots &gt; 25,000 sq ft</span></label>
+                <input type="text" id="ZN" name="ZN" placeholder="e.g. 18.0" required>
+              </div>
+
+              <div class="field">
+                <label for="INDUS"><span class="code">INDUS</span><span class="desc">% non-retail business acres per town</span></label>
+                <input type="text" id="INDUS" name="INDUS" placeholder="e.g. 2.31" required>
+              </div>
+
+              <div class="field">
+                <label for="CHAS"><span class="code">CHAS</span><span class="desc">Borders the Charles River?</span></label>
+                <select id="CHAS" name="CHAS" required>
+                  <option value="" disabled selected>Select</option>
+                  <option value="0">0 &mdash; No</option>
+                  <option value="1">1 &mdash; Yes</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="NOX"><span class="code">NOX</span><span class="desc">Nitric oxide concentration (parts per 10M)</span></label>
+                <input type="text" id="NOX" name="NOX" placeholder="e.g. 0.538" required>
+              </div>
+
+              <div class="section-label">Structure &amp; Access</div>
+
+              <div class="field">
+                <label for="RM"><span class="code">RM</span><span class="desc">Average rooms per dwelling</span></label>
+                <input type="text" id="RM" name="RM" placeholder="e.g. 6.575" required>
+              </div>
+
+              <div class="field">
+                <label for="Age"><span class="code">AGE</span><span class="desc">% owner-occupied units built pre-1940</span></label>
+                <input type="text" id="Age" name="Age" placeholder="e.g. 65.2" required>
+              </div>
+
+              <div class="field">
+                <label for="DIS"><span class="code">DIS</span><span class="desc">Weighted distance to employment centers</span></label>
+                <input type="text" id="DIS" name="DIS" placeholder="e.g. 4.09" required>
+              </div>
+
+              <div class="field">
+                <label for="RAD"><span class="code">RAD</span><span class="desc">Index of accessibility to radial highways</span></label>
+                <input type="text" id="RAD" name="RAD" placeholder="e.g. 1" required>
+              </div>
+
+              <div class="section-label">Economic &amp; Social</div>
+
+              <div class="field">
+                <label for="TAX"><span class="code">TAX</span><span class="desc">Property-tax rate per $10,000</span></label>
+                <input type="text" id="TAX" name="TAX" placeholder="e.g. 296" required>
+              </div>
+
+              <div class="field">
+                <label for="PTRATIO"><span class="code">PTRATIO</span><span class="desc">Pupil-teacher ratio by town</span></label>
+                <input type="text" id="PTRATIO" name="PTRATIO" placeholder="e.g. 15.3" required>
+              </div>
+
+              <div class="field">
+                <label for="B"><span class="code">B</span><span class="desc">1000(Bk &minus; 0.63)&sup2; census formula</span></label>
+                <input type="text" id="B" name="B" placeholder="e.g. 396.9" required>
+              </div>
+
+              <div class="field">
+                <label for="LSTAT"><span class="code">LSTAT</span><span class="desc">% lower status of the population</span></label>
+                <input type="text" id="LSTAT" name="LSTAT" placeholder="e.g. 4.98" required>
+              </div>
+
+              <div class="submit-row">
+                <button type="submit" class="predict">Run Valuation</button>
+                <span class="hint">All fields required &middot; values as decimals</span>
+              </div>
+
+              {% if prediction_text %}
+              <div class="result">
+                <span class="icon">&#10003;</span>
+                <span class="text">{{ prediction_text }}</span>
+              </div>
+              {% endif %}
+
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
