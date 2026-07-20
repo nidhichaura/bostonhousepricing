@@ -46,17 +46,8 @@
     pointer-events:none;
   }
 
-  body::before{
-    top:22px; left:22px;
-    border-right:none;
-    border-bottom:none;
-  }
-
-  body::after{
-    bottom:22px; right:22px;
-    border-left:none;
-    border-top:none;
-  }
+  body::before{ top:22px; left:22px; border-right:none; border-bottom:none; }
+  body::after{ bottom:22px; right:22px; border-left:none; border-top:none; }
 
   .page{
     max-width:1180px;
@@ -68,6 +59,48 @@
     from{opacity:0; transform:translateY(10px);}
     to{opacity:1; transform:translateY(0);}
   }
+
+  .topnav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .brand{
+    font-size:11.5px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:rgba(244,239,226,0.5);
+  }
+
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
+
+  .nav-links span.username{
+    font-size:12px;
+    color:rgba(244,239,226,0.6);
+  }
+
+  .history-link, .logout-link{
+    color:var(--brass);
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-decoration:none;
+    padding-bottom:2px;
+    border-bottom:1px solid transparent;
+    transition:border-color .2s ease, color .2s ease;
+  }
+
+  .logout-link{ color:rgba(244,239,226,0.65); }
+
+  .history-link:hover, .logout-link:hover{ border-color:currentColor; }
 
   .hero{
     display:grid;
@@ -216,23 +249,27 @@
 
   .field label{
     display:flex;
-    align-items:baseline;
+    align-items:center;
+    justify-content:space-between;
     gap:8px;
     margin-bottom:6px;
   }
 
-  .code{
+  .plain{
     font-weight:700;
-    font-size:13px;
-    letter-spacing:.04em;
-    color:var(--navy);
-    min-width:56px;
+    font-size:13.5px;
+    color:var(--ink);
   }
 
-  .desc{
-    font-size:10.5px;
-    color:#6b6152;
-    line-height:1.3;
+  .code-badge{
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.05em;
+    color:var(--navy);
+    background:rgba(11,37,69,0.08);
+    padding:2px 6px;
+    border-radius:3px;
+    flex-shrink:0;
   }
 
   .field input, .field select{
@@ -252,12 +289,21 @@
     box-shadow:0 0 0 3px rgba(201,151,43,0.25);
   }
 
+  .field-hint{
+    display:block;
+    font-size:10px;
+    color:#6b6152;
+    line-height:1.35;
+    margin-top:5px;
+  }
+
   .submit-row{
     grid-column:1 / -1;
     margin-top:18px;
     display:flex;
     align-items:center;
-    gap:16px;
+    flex-wrap:wrap;
+    gap:14px;
   }
 
   button.predict{
@@ -293,6 +339,24 @@
 
   button.predict:hover::after{ transform:translateX(4px); }
   button.predict:focus-visible{outline:3px solid var(--brass); outline-offset:2px;}
+
+  button.autofill{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-size:12px;
+    background:transparent;
+    color:var(--brass-dark);
+    border:1.5px dashed var(--brass-dark);
+    padding:13px 20px;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+
+  button.autofill:hover{ background:var(--brass-dark); color:#fff; }
+  button.autofill:focus-visible{outline:3px solid var(--brass); outline-offset:2px;}
 
   .hint{font-size:11px; color:#6b6152;}
 
@@ -349,6 +413,16 @@
 </head>
 <body>
   <div class="page">
+
+    <div class="topnav">
+      <span class="brand">Boston Housing Valuation</span>
+      <div class="nav-links">
+        <span class="username">Signed in as {{ current_user.username }}</span>
+        <a href="{{ url_for('history') }}" class="history-link">View Prediction History &rarr;</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+      </div>
+    </div>
+
     <div class="hero">
 
       <!-- Left: framing + blueprint illustration -->
@@ -356,40 +430,30 @@
         <span class="eyebrow">Regression Model &middot; Boston Housing</span>
         <h1>Estimate the median value of a Boston&#8209;area home</h1>
         <p class="lede">
-          This tool runs a trained linear regression model against the 13 classic
-          census-tract variables from the Boston Housing dataset. Fill in the survey
-          below and submit to generate an estimated median value for the tract.
+          Fill in the 13 details below in plain language &mdash; no data-science
+          background needed. Not sure what to type? Use the Auto-Fill button to
+          try the model with realistic sample values first.
         </p>
 
         <svg class="blueprint-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
           <text x="0" y="16" class="title-label">FIG. 01 &mdash; SINGLE FAMILY DWELLING, ELEVATION</text>
-
-          <!-- roof -->
           <polyline class="frame" points="60,140 210,60 360,140" />
-          <!-- walls -->
           <rect class="frame" x="90" y="140" width="240" height="140" />
-          <!-- door -->
           <rect class="frame" x="195" y="210" width="36" height="70" />
-          <!-- windows -->
           <rect class="frame" x="120" y="165" width="34" height="34" />
           <rect class="frame" x="266" y="165" width="34" height="34" />
           <line class="tick" x1="137" y1="165" x2="137" y2="199" />
           <line class="tick" x1="120" y1="182" x2="154" y2="182" />
           <line class="tick" x1="283" y1="165" x2="283" y2="199" />
           <line class="tick" x1="266" y1="182" x2="300" y2="182" />
-
-          <!-- width dimension -->
           <line class="dim" x1="90" y1="298" x2="330" y2="298" />
           <line class="tick" x1="90" y1="292" x2="90" y2="304" />
           <line class="tick" x1="330" y1="292" x2="330" y2="304" />
           <text x="185" y="314" class="label">RM &times; 8.3 FT</text>
-
-          <!-- height dimension -->
           <line class="dim" x1="352" y1="60" x2="352" y2="280" />
           <line class="tick" x1="346" y1="60" x2="358" y2="60" />
           <line class="tick" x1="346" y1="280" x2="358" y2="280" />
           <text x="358" y="175" class="label" transform="rotate(90 358 175)">AGE-ADJ.</text>
-
           <text x="90" y="35" class="label">NOX ppm &middot; DIS mi &middot; TAX $/10k</text>
         </svg>
         <p class="scale-note">SCALE 1:50 &middot; SHEET A&#8209;01 &middot; REV. 03</p>
@@ -400,8 +464,8 @@
         <div class="ledger">
           <div class="ledger-head">
             <div>
-              <h2>Tract Valuation Ledger</h2>
-              <p>13 census-tract variables, grouped by category</p>
+              <h2>Property Details</h2>
+              <p>13 details, grouped by category &mdash; plain English, no jargon</p>
             </div>
           </div>
           <div class="stamp">EST.<br>VALUE<br>MODEL</div>
@@ -412,80 +476,94 @@
               <div class="section-label">Site &amp; Environment</div>
 
               <div class="field">
-                <label for="CRIM"><span class="code">CRIM</span><span class="desc">Per-capita crime rate by town</span></label>
-                <input type="text" id="CRIM" name="CRIM" placeholder="e.g. 0.006" required>
+                <label for="CRIM"><span class="plain">Crime Rate in Area</span><span class="code-badge">CRIM</span></label>
+                <input type="text" id="CRIM" name="CRIM" placeholder="e.g. 0.1" required>
+                <span class="field-hint">Per-capita crime rate. 0 = very safe, 1 or higher = high crime.</span>
               </div>
 
               <div class="field">
-                <label for="ZN"><span class="code">ZN</span><span class="desc">% land zoned for lots &gt; 25,000 sq ft</span></label>
-                <input type="text" id="ZN" name="ZN" placeholder="e.g. 18.0" required>
+                <label for="ZN"><span class="plain">Large-Lot Zoning %</span><span class="code-badge">ZN</span></label>
+                <input type="text" id="ZN" name="ZN" placeholder="e.g. 20" required>
+                <span class="field-hint">% of land zoned for large residential lots (25,000+ sq ft). Range 0&ndash;100.</span>
               </div>
 
               <div class="field">
-                <label for="INDUS"><span class="code">INDUS</span><span class="desc">% non-retail business acres per town</span></label>
-                <input type="text" id="INDUS" name="INDUS" placeholder="e.g. 2.31" required>
+                <label for="INDUS"><span class="plain">Industrial Land %</span><span class="code-badge">INDUS</span></label>
+                <input type="text" id="INDUS" name="INDUS" placeholder="e.g. 5" required>
+                <span class="field-hint">% of area used for non-retail/industrial business. Range 0&ndash;30.</span>
               </div>
 
               <div class="field">
-                <label for="CHAS"><span class="code">CHAS</span><span class="desc">Borders the Charles River?</span></label>
+                <label for="CHAS"><span class="plain">Near the Charles River?</span><span class="code-badge">CHAS</span></label>
                 <select id="CHAS" name="CHAS" required>
                   <option value="" disabled selected>Select</option>
-                  <option value="0">0 &mdash; No</option>
-                  <option value="1">1 &mdash; Yes</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
                 </select>
+                <span class="field-hint">Does the property border the Charles River?</span>
               </div>
 
               <div class="field">
-                <label for="NOX"><span class="code">NOX</span><span class="desc">Nitric oxide concentration (parts per 10M)</span></label>
-                <input type="text" id="NOX" name="NOX" placeholder="e.g. 0.538" required>
+                <label for="NOX"><span class="plain">Air Pollution Level</span><span class="code-badge">NOX</span></label>
+                <input type="text" id="NOX" name="NOX" placeholder="e.g. 0.5" required>
+                <span class="field-hint">Nitric oxide concentration. Roughly 0.3 (cleaner) to 0.9 (more polluted).</span>
               </div>
 
               <div class="section-label">Structure &amp; Access</div>
 
               <div class="field">
-                <label for="RM"><span class="code">RM</span><span class="desc">Average rooms per dwelling</span></label>
-                <input type="text" id="RM" name="RM" placeholder="e.g. 6.575" required>
+                <label for="RM"><span class="plain">Number of Rooms</span><span class="code-badge">RM</span></label>
+                <input type="text" id="RM" name="RM" placeholder="e.g. 6" required>
+                <span class="field-hint">Average rooms per home. Typically between 4 and 9.</span>
               </div>
 
               <div class="field">
-                <label for="Age"><span class="code">AGE</span><span class="desc">% owner-occupied units built pre-1940</span></label>
-                <input type="text" id="Age" name="Age" placeholder="e.g. 65.2" required>
+                <label for="Age"><span class="plain">Building Age %</span><span class="code-badge">AGE</span></label>
+                <input type="text" id="Age" name="Age" placeholder="e.g. 45" required>
+                <span class="field-hint">% of homes built before 1940. Higher = older housing stock.</span>
               </div>
 
               <div class="field">
-                <label for="DIS"><span class="code">DIS</span><span class="desc">Weighted distance to employment centers</span></label>
-                <input type="text" id="DIS" name="DIS" placeholder="e.g. 4.09" required>
+                <label for="DIS"><span class="plain">Distance to Job Centers</span><span class="code-badge">DIS</span></label>
+                <input type="text" id="DIS" name="DIS" placeholder="e.g. 4" required>
+                <span class="field-hint">Weighted distance to employment hubs, in miles. Roughly 1&ndash;12.</span>
               </div>
 
               <div class="field">
-                <label for="RAD"><span class="code">RAD</span><span class="desc">Index of accessibility to radial highways</span></label>
-                <input type="text" id="RAD" name="RAD" placeholder="e.g. 1" required>
+                <label for="RAD"><span class="plain">Highway Accessibility</span><span class="code-badge">RAD</span></label>
+                <input type="text" id="RAD" name="RAD" placeholder="e.g. 4" required>
+                <span class="field-hint">Ease of access to radial highways. Scale of 1 (low) to 24 (high).</span>
               </div>
 
               <div class="section-label">Economic &amp; Social</div>
 
               <div class="field">
-                <label for="TAX"><span class="code">TAX</span><span class="desc">Property-tax rate per $10,000</span></label>
-                <input type="text" id="TAX" name="TAX" placeholder="e.g. 296" required>
+                <label for="TAX"><span class="plain">Property Tax Rate</span><span class="code-badge">TAX</span></label>
+                <input type="text" id="TAX" name="TAX" placeholder="e.g. 300" required>
+                <span class="field-hint">Property tax rate per $10,000 of value. Typically 200&ndash;700.</span>
               </div>
 
               <div class="field">
-                <label for="PTRATIO"><span class="code">PTRATIO</span><span class="desc">Pupil-teacher ratio by town</span></label>
-                <input type="text" id="PTRATIO" name="PTRATIO" placeholder="e.g. 15.3" required>
+                <label for="PTRATIO"><span class="plain">School Pupil-Teacher Ratio</span><span class="code-badge">PTRATIO</span></label>
+                <input type="text" id="PTRATIO" name="PTRATIO" placeholder="e.g. 18" required>
+                <span class="field-hint">Students per teacher in local schools. Typically 12&ndash;22; lower is often preferred.</span>
               </div>
 
               <div class="field">
-                <label for="B"><span class="code">B</span><span class="desc">1000(Bk &minus; 0.63)&sup2; census formula</span></label>
-                <input type="text" id="B" name="B" placeholder="e.g. 396.9" required>
+                <label for="B"><span class="plain">Demographic Index</span><span class="code-badge">B</span></label>
+                <input type="text" id="B" name="B" placeholder="e.g. 390" required>
+                <span class="field-hint">Census-based demographic index from the original dataset formula. Typically 0&ndash;396.9.</span>
               </div>
 
               <div class="field">
-                <label for="LSTAT"><span class="code">LSTAT</span><span class="desc">% lower status of the population</span></label>
-                <input type="text" id="LSTAT" name="LSTAT" placeholder="e.g. 4.98" required>
+                <label for="LSTAT"><span class="plain">Lower-Income Population %</span><span class="code-badge">LSTAT</span></label>
+                <input type="text" id="LSTAT" name="LSTAT" placeholder="e.g. 10" required>
+                <span class="field-hint">% of the population classified as lower economic status. Typically 2&ndash;35.</span>
               </div>
 
               <div class="submit-row">
                 <button type="submit" class="predict">Run Valuation</button>
+                <button type="button" class="autofill" onclick="autoFillSample()">Auto-Fill Sample Data</button>
                 <span class="hint">All fields required &middot; values as decimals</span>
               </div>
 
@@ -503,5 +581,19 @@
 
     </div>
   </div>
+
+  <script>
+    function autoFillSample(){
+      var sample = {
+        CRIM: 0.1, ZN: 20, INDUS: 5, CHAS: "1", NOX: 0.45,
+        RM: 6.5, Age: 45, DIS: 5, RAD: 4, TAX: 300,
+        PTRATIO: 16, B: 390, LSTAT: 8
+      };
+      Object.keys(sample).forEach(function(key){
+        var el = document.getElementById(key);
+        if (el) { el.value = sample[key]; }
+      });
+    }
+  </script>
 </body>
 </html>
