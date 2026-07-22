@@ -27,20 +27,22 @@ A full-stack Machine Learning web application deployed as a SaaS. This app predi
 2. **Create a virtual environment:**
    ```bash
    python -m venv venv
+   
 3. **Activate the virtual environment:**
-(On Windows: venv\Scripts\activate)
-(On Mac/Linux: source venv/bin/activate)
+   
+   (On Windows: venv\Scripts\activate)
+   (On Mac/Linux: source venv/bin/activate)
 
 4. **Install required packages:**
    ```bash
    pip install -r requirements.txt
 
 5. **Set up Environment Variables:**
-Create a .env file in the root directory and add your Supabase credentials:
-DATABASE_URL=your_supabase_postgresql_url
-SECRET_KEY=your_secret_key
+ Create a .env file in the root directory and add your Supabase credentials:
+    DATABASE_URL=your_supabase_postgresql_url
+    SECRET_KEY=your_secret_key
 
 6. **Run the Flask application:**
     ```bash
     python app.py
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.    
+    Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.    
